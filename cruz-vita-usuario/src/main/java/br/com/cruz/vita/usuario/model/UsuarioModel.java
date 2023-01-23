@@ -25,14 +25,8 @@ public class UsuarioModel {
 	private String email;
 	private String senha;
 	private String cpf;
-	
-	
-	
-	
-	
-	
-	
-	
+
+
 	
 	/*
 	 * @Id
