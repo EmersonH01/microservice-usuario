@@ -3,6 +3,7 @@ package br.com.cruz.vita.usuario.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,17 +22,16 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
+	@Autowired
+	private ModelMapper modelMapper;
+	
 	
 	public List<UsuarioModel> listaUsuario(){
 		List<UsuarioModel> lista = usuarioRepository.findAll();
 		return lista;
 	}
 	
-	public Optional<UsuarioModel> findByEmail(String email) {
-		
-//        return usuarioRepository.findByEmail(email);
-		return null;
-    }
+	
 	
 	
 	
