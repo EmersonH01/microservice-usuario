@@ -33,64 +33,42 @@ import lombok.NoArgsConstructor;
 public class UsuarioController {
 
 	@Autowired
-	private UsuarioRepository usuarioRepository;
-
-	@Autowired
-	private ModelMapper modelMapper;
-	
 	private UsuarioService usuarioService;
 
-	@GetMapping("/lista")
-	public ResponseEntity<List<UsuarioModel>> listaUsuarios() {
-		List<UsuarioModel> lista = usuarioRepository.findAll();
-		return ResponseEntity.status(HttpStatus.OK).body(lista);
+	@GetMapping("/listar")
+	public ResponseEntity<List<UsuarioModel>> listarUsuarios() {
+
+		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.listarUsuario());
 	}
-	
+
 	@GetMapping("/buscar/{email}")
-	public ResponseEntity<String> buscarPeloEmail(@PathVariable String email){
-		UsuarioModel buscarEmail = usuarioRepository.findByEmail(email);
-		String cpfUsuario = buscarEmail.getCpf();
-		return ResponseEntity.status(200).body("Email possui cadastro vinculado com o cpf: " + cpfUsuario);
+	public ResponseEntity<String> buscarPorEmail(@PathVariable String email) {
+
+		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarPorEmail(email));
 	}
 
 	@PostMapping("/cadastrar")
 	public ResponseEntity<String> criarUsuario(@RequestBody UsuarioDTO usuario) {
-		UsuarioModel usuarioNovo = modelMapper.map(usuario, UsuarioModel.class);
-		usuarioRepository.save(usuarioNovo);
-		return ResponseEntity.status(201).body("usuário criado com sucesso!");
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.cadastrarUsuario(usuario));
+	}
+
+	@PostMapping("/criarlote")
+	public ResponseEntity<String> criarUsuarioLote(@RequestBody List<UsuarioDTO> usuario) {
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.cadastrarPorLote(usuario));
+	}
+
+	@DeleteMapping("/deletar/{email}")
+	public ResponseEntity<String> deletarEmail(@PathVariable String email) {
+
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(usuarioService.deletarPorEmail(email));
 	}
 
 	@PutMapping("/atualizar/{email}")
-    public ResponseEntity<String> criarUsuario(@RequestBody UsuarioDTO usuario, @PathVariable String email) {
-        UsuarioModel buscaEmail = usuarioRepository.findByEmail(email);
-        var usuarioModel = new UsuarioModel();
-        BeanUtils.copyProperties(usuario, usuarioModel);
-        usuarioModel.setId(buscaEmail.getId());
-        String cpfUsuario = usuarioModel.getCpf();
-        usuarioRepository.save(usuarioModel);
-        return ResponseEntity.status(HttpStatus.OK).body("Usuário vinculado ao cpf " + cpfUsuario + " atualizado com sucesso.");
-    }
+	public ResponseEntity<String> atualizarUsuario(@RequestBody UsuarioDTO usuario, @PathVariable String email) {
 
-	@DeleteMapping("/deletar/{email}")
-    public ResponseEntity<String> deletarEmail(@PathVariable String email){
-        UsuarioModel buscaEmail = usuarioRepository.findByEmail(email);
-        String cpfUsuario = buscaEmail.getCpf();
-        usuarioRepository.delete(buscaEmail);
-        return ResponseEntity.status(200).body("usuário vinculado ao cpf " + cpfUsuario + " deletado com sucesso");
-    }
-	
-	
-	@PostMapping("/cadastrar/lote")
-    public ResponseEntity<String> criarUsuarioLote(@RequestBody List<UsuarioDTO> usuario) {
-        for (UsuarioDTO itemLista : usuario) {
-            var usuarioModel = new UsuarioModel();
-            BeanUtils.copyProperties(itemLista, usuarioModel);
-            usuarioRepository.save(usuarioModel);
-        }
-        return ResponseEntity.status(201).body("Lote cadastrado com sucesso");
-    }
-	
-	
-	
+		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.atualizarViaEmail(usuario, email));
+	}
 
 }

@@ -1,5 +1,7 @@
 package br.com.cruz.vita.usuario.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,6 +31,25 @@ public class UsuarioModel {
 	private String senha;
 	@NotNull
 	private String cpf;
+	
+	@Column(name = "tentativa_login")
+	private Integer tentativaLogin;
+	
+	@Column(name = "data_inclusao")
+	private LocalDateTime dataInclusao;
+	
+	@Column(name = "data_ultimo_login")
+	private LocalDateTime dataUltimoLogin;
+	
+	@Column(name = "data_exclusao")
+	private LocalDateTime dataExclusao;
+	
+	@Column
+	private Boolean bloqueado;
+	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_pessoa")
+	private Long idPessoa;
 
 
 	
