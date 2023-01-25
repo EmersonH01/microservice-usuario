@@ -51,17 +51,15 @@ public class UsuarioModel {
 	@Column(name = "id_pessoa")
 	private Long idPessoa;
 
+//	public void setDataInclusao(String format) {
+//		this.dataInclusao = dataInclusao;
+//		
+//	}
+
+
 
 	
-	/*
-	 * @Id
-	 * 
-	 * @GeneratedValue(strategy = GenerationType.IDENTITY)
-	 * 
-	 * @Column(name = "id_pessoa") private Long idPessoa;
-	 * 
-	 * 
-	 * private????tentativaLogin; private????data_inclusap; private????bloquado;
-	 * private????dataUltimoLogin; private????dataExclusaoa;
-	 */
+	
+	
+	
 }
