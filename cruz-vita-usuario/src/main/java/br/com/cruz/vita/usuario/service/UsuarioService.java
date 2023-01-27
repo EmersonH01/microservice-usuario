@@ -2,6 +2,7 @@ package br.com.cruz.vita.usuario.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,7 @@ public class UsuarioService {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	
-	/* listar todos os usuarios através do metodo findAll da JpaRepository */	 
+	/* listar todos os usuarios através do metodo findAll da JpaRepository */
 	public List<UsuarioModel> listarUsuario() {
 		List<UsuarioModel> lista = usuarioRepository.findAll();
 		return lista;
@@ -35,27 +35,25 @@ public class UsuarioService {
 
 	/* Busca todos usuarios por email que é passado na Url */
 	public String buscarPorEmail(String email) {
-		UsuarioModel buscarEmail = usuarioRepository.findByEmail(email);
-		String cpfUsuario = buscarEmail.getCpf();
 
-		return "Email possui cadastro vinculado com o cpf: " + cpfUsuario;
+		return "Email possui cadastro vinculado com o cpf: " + usuarioRepository.findByEmail(email).getCpf();
 	}
 
 	/* busca usuarios desativados pela data de exclusao */
 	public List<UsuarioModel> buscarDesativado() {
+//		LocalDateTime usuarioExcluido = usuarioModel.getDataExclusao();
 
-		List<UsuarioModel> lista = usuarioRepository.findAll();
-		for (UsuarioModel usuarioModel : lista) {
-			if (!usuarioModel.getDataExclusao().toString().isEmpty()) {
-				lista.add(usuarioModel);
+		List<UsuarioModel> lista = usuarioRepository.findByDataExclusao();
 
-				lista.add(usuarioModel);
-				return lista;
+		return lista;
+	}
 
-			} else {
-				return null;
-			}
-		}
+	/* busca usuarios desativados pela data de ativos */
+	public List<UsuarioModel> buscarAtivados() {
+//		LocalDateTime usuarioExcluido = usuarioModel.getDataExclusao();
+
+		List<UsuarioModel> lista = usuarioRepository.findByDataInclusao();
+
 		return lista;
 	}
 
@@ -71,12 +69,20 @@ public class UsuarioService {
 	public String cadastrarPorLote(List<UsuarioDTO> usuario) {
 
 		for (UsuarioDTO itemLista : usuario) {
+			Optional<UsuarioModel> findAny = usuarioRepository.findByCpf(itemLista.getCpf()).stream().findAny();
+			if (true){
+				
+			} else {
+
+			}
+
 			UsuarioModel usuarioModel = modelMapper.map(itemLista, UsuarioModel.class);
 
 			usuarioRepository.save(usuarioModel);
-		}
 
+		}
 		return "Lote cadastrado com sucesso";
+
 	}
 
 	/* atualiza o usuario através do email passado e retorna uma mensagem */
@@ -98,13 +104,14 @@ public class UsuarioService {
 		return "usuário vinculado ao cpf " + cpfUsuario + " excluido com sucesso";
 	}
 
-	/* exclusão logica do usuario */
+	/* exclusão logica de usuario */
 	public String deletarPorEmail(String email) {
 		UsuarioModel buscaEmail = usuarioRepository.findByEmail(email);
 //		DateTimeFormatter formatarDataEHora = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 		buscaEmail.setDataExclusao(LocalDateTime.now());
 		String cpfUsuario = buscaEmail.getCpf();
 		usuarioRepository.save(buscaEmail);
+
 		return "usuário vinculado ao cpf " + cpfUsuario + " deletado com sucesso!";
 	}
 
