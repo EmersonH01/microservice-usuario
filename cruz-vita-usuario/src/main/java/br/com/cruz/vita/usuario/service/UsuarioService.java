@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import br.com.cruz.vita.usuario.dto.UsuarioDTO;
@@ -40,7 +41,7 @@ public class UsuarioService {
 	}
 
 	/* busca usuarios desativados pela data de exclusao */
-	public List<UsuarioModel> buscarDesativado() {
+	public List<UsuarioModel> buscarDesativados() {
 //		LocalDateTime usuarioExcluido = usuarioModel.getDataExclusao();
 
 		List<UsuarioModel> lista = usuarioRepository.findByDataExclusao();
@@ -59,23 +60,21 @@ public class UsuarioService {
 
 	/* cadastra um novo usuario */
 	public String cadastrarUsuario(UsuarioDTO usuario) {
+
 		UsuarioModel usuarioNovo = modelMapper.map(usuario, UsuarioModel.class);
 		usuarioRepository.save(usuarioNovo);
-
 		return "usuário criado com sucesso!";
+
 	}
 
 	/* cadastra uma lista de usuarios */
 	public String cadastrarPorLote(List<UsuarioDTO> usuario) {
 
 		for (UsuarioDTO itemLista : usuario) {
-			Optional<UsuarioModel> findAny = usuarioRepository.findByCpf(itemLista.getCpf()).stream().findAny();
-			if (true){
+			if(verificarSeExiste(itemLista)) {
 				
-			} else {
-
+				throw new DataIntegrityViolationException("O CPF: " + itemLista.getCpf() + " já existe em nosso sistema");
 			}
-
 			UsuarioModel usuarioModel = modelMapper.map(itemLista, UsuarioModel.class);
 
 			usuarioRepository.save(usuarioModel);
@@ -83,6 +82,16 @@ public class UsuarioService {
 		}
 		return "Lote cadastrado com sucesso";
 
+	}
+
+	/* verifica se o CPF já é existente no banco de dados */
+	public Boolean verificarSeExiste(UsuarioDTO usuarioDTO) {
+
+		if (usuarioRepository.findByCpf(usuarioDTO.getCpf()).isEmpty()) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/* atualiza o usuario através do email passado e retorna uma mensagem */

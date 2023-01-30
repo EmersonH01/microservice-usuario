@@ -24,7 +24,7 @@ public interface UsuarioRepository extends JpaRepository<UsuarioModel, Long>{
 	@Query(value = "SELECT * FROM usuario WHERE data_exclusao IS NULL", nativeQuery = true)
 	List<UsuarioModel> findByDataInclusao();
 
-	@Query(value = "SELECT * FROM usuario WHERE :cpf", nativeQuery = true)
+	@Query(value = "SELECT * FROM usuario WHERE cpf = :cpf", nativeQuery = true)
 	Optional<UsuarioModel> findByCpf(@Param(value = "cpf") String cpf);
 
 	

@@ -44,7 +44,7 @@ public class UsuarioController {
 	@GetMapping("/listar/desativados")
 	public ResponseEntity<List<UsuarioModel>> buscarDesativado() {
 
-		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarDesativado());
+		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarDesativados());
 	}
 
 	@GetMapping("/listar/ativados")
@@ -80,7 +80,7 @@ public class UsuarioController {
 	@DeleteMapping("/excluir/{email}")
 	public ResponseEntity<String> excluirEmail(@RequestBody @PathVariable String email) {
 
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(usuarioService.excluirPorEmail(email));
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(usuarioService.excluirPorEmail(email));
 	}
 
 	@DeleteMapping("/deletar/{email}")

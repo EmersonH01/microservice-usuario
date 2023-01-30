@@ -14,20 +14,26 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler{
 
 	
 	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity handlerException(Exception e) {
+	public ResponseEntity<String> handlerException(Exception e) {
 		
-		return new ResponseEntity("ConstraintViolationException", HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<String>("ConstraintViolationException", HttpStatus.UNAUTHORIZED);
 	}
 	
 	@ExceptionHandler(NullPointerException.class)
-	public ResponseEntity tratarNullPointerException(Exception e) {
+	public ResponseEntity<String> tratarNullPointerException(Exception e) {
 		
-		return new ResponseEntity("NullPointerException", HttpStatus.BAD_GATEWAY);
+		return new ResponseEntity<String>("NullPointerException", HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity tratarErroValidacao(Exception e) {
-		
-		return new ResponseEntity("Usuario já exisitente em nosso sistema", HttpStatus.UNAUTHORIZED);
+	public ResponseEntity tratarErroValidacao(Exception e, String msg) {
+
+		return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 	}
+	
+//	@ExceptionHandler(DataIntegrityViolationException.class)
+//	public ResponseEntity tratarValidacao(Exception e) {
+//		
+//		return new ResponseEntity("Usuario já exisitente em nosso sistema", HttpStatus.UNAUTHORIZED);
+//	}
 }
