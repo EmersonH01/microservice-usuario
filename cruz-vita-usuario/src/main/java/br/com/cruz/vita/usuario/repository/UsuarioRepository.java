@@ -11,22 +11,17 @@ import org.springframework.stereotype.Repository;
 import br.com.cruz.vita.usuario.model.UsuarioModel;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<UsuarioModel, Long>{
+public interface UsuarioRepository extends JpaRepository<UsuarioModel, Long> {
 
-	UsuarioModel findByEmail(String email);
+	Optional<UsuarioModel> findByEmail(String email);
 
-	
-	
 	@Query(value = "SELECT * FROM usuario WHERE data_exclusao IS NOT NULL", nativeQuery = true)
 	List<UsuarioModel> findByDataExclusao();
-	
-	
+
 	@Query(value = "SELECT * FROM usuario WHERE data_exclusao IS NULL", nativeQuery = true)
 	List<UsuarioModel> findByDataInclusao();
 
 	@Query(value = "SELECT * FROM usuario WHERE cpf = :cpf", nativeQuery = true)
 	Optional<UsuarioModel> findByCpf(@Param(value = "cpf") String cpf);
 
-	
-	
 }

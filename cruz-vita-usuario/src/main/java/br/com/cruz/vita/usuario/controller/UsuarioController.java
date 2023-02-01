@@ -5,7 +5,6 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,11 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cruz.vita.usuario.dto.ResponseUsuarioDTO;
 import br.com.cruz.vita.usuario.dto.UsuarioDTO;
-import br.com.cruz.vita.usuario.model.UsuarioModel;
 import br.com.cruz.vita.usuario.service.UsuarioService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,19 +34,19 @@ public class UsuarioController {
 	private UsuarioService usuarioService;
 
 	@GetMapping("/listar")
-	public ResponseEntity<List<UsuarioModel>> listarUsuarios() {
+	public ResponseEntity<List<ResponseUsuarioDTO>> listarUsuarios() {
 
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.listarUsuario());
 	}
 
 	@GetMapping("/listar/desativados")
-	public ResponseEntity<List<UsuarioModel>> buscarDesativado() {
+	public ResponseEntity<List<ResponseUsuarioDTO>> buscarDesativado() {
 
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarDesativados());
 	}
 
 	@GetMapping("/listar/ativados")
-	public ResponseEntity<List<UsuarioModel>> buscarAtivos() {
+	public ResponseEntity<List<ResponseUsuarioDTO>> buscarAtivos() {
 
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarAtivados());
 	}

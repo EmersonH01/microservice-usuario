@@ -12,6 +12,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import org.hibernate.validator.constraints.br.CPF;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,7 +39,8 @@ public class UsuarioModel {
 	private String senha;
 	
 	@NotBlank(message = "Este campo é obrigatório!")
-	private String cpf;
+	@CPF
+	private String cpf; 
 
 	@Column(name = "tentativa_login")
 	private Integer tentativaLogin;
