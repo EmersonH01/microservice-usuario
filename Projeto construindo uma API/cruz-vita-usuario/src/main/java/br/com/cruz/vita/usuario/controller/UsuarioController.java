@@ -24,13 +24,12 @@ public class UsuarioController {
 	
 	@Autowired
 	private UsuarioService service ;
+
 	
-//	@GetMapping("/listar/desativados"){
-//		public ResponseEntity<List<UsuarioModel>> ListaDesativados (){
-//			return ResponseEntity.status(200).body(service.);
-//		}
-//	}
-	
+	@GetMapping("/listar/desativados")
+	public ResponseEntity<List<UsuarioModel>> listaDeDesativados (UsuarioDTO listaDesativados ){
+		return ResponseEntity.status(200).body(service.buscarPorDesativados());
+	}
 	
 	@GetMapping(path = "lista")
 	public  ResponseEntity<List<UsuarioModel>> listaBanco (){
@@ -39,7 +38,7 @@ public class UsuarioController {
 	
 	@GetMapping ("/buscar/{email}")
 	public ResponseEntity<String> buscarUsuario (@PathVariable String email){
-		return ResponseEntity.status(200).body(service.BuscaPorEmail(email));
+		return ResponseEntity.status(200).body(service.buscaPorEmail(email));
 	}
 	
 	@GetMapping("/criarLote")
@@ -55,7 +54,7 @@ public class UsuarioController {
 	}
 		  
 	@PutMapping("/editar/{email}")
-	public ResponseEntity<String> editaUsuario ( @RequestBody UsuarioDTO usuario, @PathVariable("email") String email ) {
+	public ResponseEntity<String> editaUsuario (@RequestBody UsuarioDTO usuario, @PathVariable("email") String email) {
 		UsuarioDTO model = service.editaUsuario(usuario, email);
 		return ResponseEntity.status(200).body("Usuario vinculado ao cpf "  + model.getCpf() +  " atualizado com sucesso  "  + model.toString());
 	}

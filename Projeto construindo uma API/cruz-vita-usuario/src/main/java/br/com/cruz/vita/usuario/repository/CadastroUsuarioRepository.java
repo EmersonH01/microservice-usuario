@@ -19,7 +19,8 @@ public interface CadastroUsuarioRepository extends JpaRepository<UsuarioModel, L
 
 	  UsuarioModel deleteByEmail(String email);
 
-	  String save(List<UsuarioModel> lista); 
-	    
-	
+	  String save(List<UsuarioModel> lista);
+
+	 @Query(value = "SELECT * FROM usuarios WHERE data_exclusao IS NOT NULL", nativeQuery = true)
+	  List<UsuarioModel> buscaDesativados();
 }

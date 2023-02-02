@@ -11,26 +11,24 @@ import org.springframework.stereotype.Service;
 import br.com.cruz.vita.usuario.dto.UsuarioDTO;
 import br.com.cruz.vita.usuario.model.UsuarioModel;
 import br.com.cruz.vita.usuario.repository.CadastroUsuarioRepository;
-import lombok.Data;
 
 @Service
-@Data
 public class UsuarioService {
 
 	@Autowired
-	public CadastroUsuarioRepository cadastro;
+	public CadastroUsuarioRepository cadastroRepository;
 
 	public void criaUsuarioNovo(UsuarioDTO usuarioDto) {
 		ModelMapper mapper = new ModelMapper();
 		UsuarioModel usuario = mapper.map(usuarioDto, UsuarioModel.class);
 		usuario.setDataDeCadastro(LocalDateTime.now());
-		cadastro.save(usuario);
+		cadastroRepository.save(usuario);
 	}
 
 	public UsuarioDTO editaUsuario(UsuarioDTO usuarioDto, String email) {
-		UsuarioModel editar = cadastro.findByEmail(email);
+		UsuarioModel editar = cadastroRepository.findByEmail(email);
 		editarUsuario(usuarioDto, editar);
-		cadastro.save(editar);
+		cadastroRepository.save(editar);
 		ModelMapper mapper = new ModelMapper();
 		return mapper.map(editar, UsuarioDTO.class);
 	}
@@ -41,24 +39,24 @@ public class UsuarioService {
 	}
 
 	public List<UsuarioModel> ListaUsuario() {
-		List<UsuarioModel> lista = cadastro.findAll();
+		List<UsuarioModel> lista = cadastroRepository.findAll();
 		return lista;
 	}
 	
 	public String DeletaUsuario(Long id) {
-		cadastro.deleteById(id);
+		cadastroRepository.deleteById(id);
 		return "usuario deletado";
 	}
 
 	public String ExcluirPorEmail(String email) {
-		UsuarioModel busca = cadastro.findByEmail(email);
-		busca.setDataUsuarioDeletado(LocalDateTime.now());	
-		cadastro.save(busca);
+		UsuarioModel busca = cadastroRepository.findByEmail(email);
+		busca.setData_exclusao(LocalDateTime.now());	
+		cadastroRepository.save(busca);
 		return "Usuario Deletado com sucesso";
 	 }
 
-	public String BuscaPorEmail(String email) {
-		UsuarioModel novaBusca = cadastro.findByEmail(email);
+	public String buscaPorEmail(String email) {
+		UsuarioModel novaBusca = cadastroRepository.findByEmail(email);
 		String BuscaCpf = novaBusca.getCpf();
 		return " Email vinculado ao CPF " + BuscaCpf;
 	}
@@ -68,9 +66,16 @@ public class UsuarioService {
 		for (UsuarioDTO usuario : usuarios) {
 			  lista.add(new UsuarioModel(usuario));
 		   }
-		cadastro.saveAll(lista);
+		cadastroRepository.saveAll(lista);
 	  return "Lote cadastrado com sucesso";
 	}
 	
-	
+	public List<UsuarioModel> buscarPorDesativados (){
+	return cadastroRepository.buscaDesativados();
+		
+	} 
+	 
 }
+	
+	
+

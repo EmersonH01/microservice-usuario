@@ -33,16 +33,15 @@ public class UsuarioModel {
 	@Email 
 	private String email;
 	
-	@Column(name = "Senha", length = 10)
+	@Column(name = "senha", length = 10)
 	private String senha; 
 	
-	@Column(name = "DataExclusão")
-	private LocalDateTime dataUsuarioDeletado ;
+	private LocalDateTime data_exclusao;
 	
-	@Column(name = "DataCadastro")
+	@Column(name = "data_cadastro")
 	private LocalDateTime dataDeCadastro;
 	
-	@Column(name = "CPF")
+	@Column(name = "cpf")
 	private String cpf ;
 	
     public UsuarioModel(UsuarioDTO usuario){
