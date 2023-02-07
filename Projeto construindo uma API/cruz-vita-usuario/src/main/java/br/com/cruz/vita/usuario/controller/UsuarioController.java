@@ -17,23 +17,33 @@ import br.com.cruz.vita.usuario.dto.UsuarioDTO;
 import br.com.cruz.vita.usuario.dto.UsuarioDesativadoDto;
 import br.com.cruz.vita.usuario.dto.UsuariosAtivosDTO;
 import br.com.cruz.vita.usuario.service.UsuarioService;
+import lombok.extern.slf4j.Slf4j;
 
 /*
+ * 
  * @autor : Desenvolvedor Cleber 
  * @nome : Construindo uma APi de cadastro de usuarios
  * @version : 1.0
  * @date : 03/02/2023 ás 17:28
  * 
  */
-@RestController
+@Slf4j
+@RestController 
 @RequestMapping("/usuario")
 public class UsuarioController {
 	
 	@Autowired
 	private UsuarioService service ;
+	
+	
+	@GetMapping
+	public ResponseEntity error() {
+		log.info("Chamando end point usuarios");
+		throw new NullPointerException();
+	}
 		
 	@PostMapping(path = "/cadastro")
-	public ResponseEntity<String> criandoNovoUsuario (@RequestBody UsuarioDTO usuario){
+	public ResponseEntity<String> criandoNovoUsuario (@RequestBody UsuarioDTO usuario){		
 		service.criaUsuarioNovo(usuario);
 		return ResponseEntity.status(201).body("Um novo usuario foi cadastrado");
 	}

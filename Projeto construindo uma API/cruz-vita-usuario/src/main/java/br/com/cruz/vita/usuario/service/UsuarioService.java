@@ -40,7 +40,6 @@ public class UsuarioService {
 		return mapper.map(editar, UsuarioDTO.class);
 	  }
 	
-	 // Editar senha
 	public String editarUsuario(UsuarioDTO usuarioSenha, String senha) {
 		UsuarioModel editar = cadastroRepository.findBySenha(senha);
 		editarUsuario(usuarioSenha, editar);

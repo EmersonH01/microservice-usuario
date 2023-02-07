@@ -17,5 +17,4 @@ public class CruzVitaUsuarioApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CruzVitaUsuarioApplication.class, args);
 	}
-
 }
