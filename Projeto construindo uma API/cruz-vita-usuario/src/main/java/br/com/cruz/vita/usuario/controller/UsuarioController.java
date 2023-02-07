@@ -14,25 +14,54 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cruz.vita.usuario.dto.UsuarioDTO;
-import br.com.cruz.vita.usuario.model.UsuarioModel;
+import br.com.cruz.vita.usuario.dto.UsuarioDesativadoDto;
+import br.com.cruz.vita.usuario.dto.UsuariosAtivosDTO;
 import br.com.cruz.vita.usuario.service.UsuarioService;
 
-
+/*
+ * @autor : Desenvolvedor Cleber 
+ * @nome : Construindo uma APi de cadastro de usuarios
+ * @version : 1.0
+ * @date : 03/02/2023 ás 17:28
+ * 
+ */
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
 	
 	@Autowired
 	private UsuarioService service ;
-
+		
+	@PostMapping(path = "/cadastro")
+	public ResponseEntity<String> criandoNovoUsuario (@RequestBody UsuarioDTO usuario){
+		service.criaUsuarioNovo(usuario);
+		return ResponseEntity.status(201).body("Um novo usuario foi cadastrado");
+	}
+		
+	@PostMapping("/criar/lote")
+	public  ResponseEntity<String> listaDeUsuario (@RequestBody List<UsuarioDTO> usuario){
+		service.CriarLoteUsuario(usuario);
+		return ResponseEntity.status(200).body("Lote de usuarios criado ");
+	}
+	
+	@PutMapping("/editar/{email}")
+	public ResponseEntity<String> editaUsuario (@RequestBody UsuarioDTO usuario, @PathVariable String email ) {
+		UsuarioDTO model = service.editaUsuario(usuario, email);
+		return ResponseEntity.status(200).body("Usuario vinculado ao cpf " +  model.getCpf() +  " foi atualizado com sucesso  "  + model.toString());
+	}
 	
 	@GetMapping("/listar/desativados")
-	public ResponseEntity<List<UsuarioModel>> listaDeDesativados (UsuarioDTO listaDesativados ){
+	public ResponseEntity<List<UsuarioDesativadoDto>> listaDeDesativados (){
 		return ResponseEntity.status(200).body(service.buscarPorDesativados());
 	}
 	
+	@GetMapping("/listar/ativados")
+	public ResponseEntity<List<UsuariosAtivosDTO>> listaDeAtivados (){
+		return ResponseEntity.status(200).body(service.buscarPorAtivados());
+	}
+	
 	@GetMapping(path = "lista")
-	public  ResponseEntity<List<UsuarioModel>> listaBanco (){
+	public  ResponseEntity<List<UsuarioDTO>> listaBanco (){
 		return ResponseEntity.status(200).body(service.ListaUsuario());
 	}
 	
@@ -41,27 +70,10 @@ public class UsuarioController {
 		return ResponseEntity.status(200).body(service.buscaPorEmail(email));
 	}
 	
-	@GetMapping("/criarLote")
-	public  ResponseEntity<String> listaDeUsuario (@RequestBody List<UsuarioDTO> usuario){
-		service.CriarLoteUsuario(usuario);
-		return ResponseEntity.status(200).body("Lote de usuarios criado ");
-	}
-   	
-	@PostMapping(path = "/cadastro")
-	public ResponseEntity<String> criandoNovoUsuario (@RequestBody UsuarioDTO usuario){
-		service.criaUsuarioNovo(usuario);
-		return ResponseEntity.status(201).body("Um novo usuario foi cadastrado");
-	}
-		  
-	@PutMapping("/editar/{email}")
-	public ResponseEntity<String> editaUsuario (@RequestBody UsuarioDTO usuario, @PathVariable("email") String email) {
-		UsuarioDTO model = service.editaUsuario(usuario, email);
-		return ResponseEntity.status(200).body("Usuario vinculado ao cpf "  + model.getCpf() +  " atualizado com sucesso  "  + model.toString());
-	}
-			
+		 
 	@DeleteMapping ("/deletar/{email}")
 	public ResponseEntity<String> excluirPorEmail (@PathVariable String email){
 		return ResponseEntity.status(200).body(service.ExcluirPorEmail(email));
 	}
-	
+		
 }
