@@ -18,9 +18,10 @@ public class UsuarioDTO {
 	@Email
 	@NotBlank
 	private String email;
+	@NotBlank
 	private String senha;
+	@NotBlank
 	private String cpf;
-	
 	
 	//private LocalDateTime data_exclusao;
 	public void setDataDeCadastro(LocalDateTime now) {

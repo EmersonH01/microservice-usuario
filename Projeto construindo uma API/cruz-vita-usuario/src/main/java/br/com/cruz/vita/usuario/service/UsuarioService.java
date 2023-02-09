@@ -7,7 +7,11 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
 import br.com.cruz.vita.usuario.dto.UsuarioDTO;
 import br.com.cruz.vita.usuario.dto.UsuarioDesativadoDto;
@@ -23,17 +27,23 @@ public class UsuarioService {
 
 	@Autowired
 	private ModelMapper modelMapper;
-
-	public void criaUsuarioNovo(UsuarioDTO usuarioDto) {
-		ModelMapper mapper = new ModelMapper();
-		UsuarioModel usuario = mapper.map(usuarioDto, UsuarioModel.class);
-		usuario.setDataDeCadastro(LocalDateTime.now());
-		cadastroRepository.save(usuario);
-	  }
-
-
+	
+	public String criaUsuarioNovo(UsuarioDTO usuarioDto){	
+		if(verificaCPFexistente(usuarioDto) || verificaSeUsuarioExistePeloEmail(usuarioDto)) {
+			return "Este usuario já esta cadastrado no banco de dados" ;
+		}else {
+			ModelMapper mapper = new ModelMapper();
+			UsuarioModel usuario = mapper.map(usuarioDto, UsuarioModel.class);
+			usuario.setDataDeCadastro(LocalDateTime.now());
+			cadastroRepository.save(usuario);
+			return "usuario foi cadastrado com sucesso" ;
+		 } 					
+		}
+ 
+	
+	
 	public UsuarioDTO editaUsuario(UsuarioDTO usuarioDto, String email) {
-		UsuarioModel editar = cadastroRepository.findByEmail(email);
+		UsuarioModel editar = cadastroRepository.findByEmail(email).get();
 		editarUsuario(usuarioDto, editar);
 		cadastroRepository.save(editar);
 		ModelMapper mapper = new ModelMapper();
@@ -60,28 +70,37 @@ public class UsuarioService {
 	}
 
 	public String ExcluirPorEmail(String email) {
-		UsuarioModel busca = cadastroRepository.findByEmail(email);
+		UsuarioModel busca = cadastroRepository.findByEmail(email).get();
 		busca.setData_exclusao(LocalDateTime.now());
 		cadastroRepository.save(busca);
 		return "Usuario Deletado com sucesso";
 	}
 
 	public String buscaPorEmail(String email) {
-		UsuarioModel novaBusca = cadastroRepository.findByEmail(email);
+		UsuarioModel novaBusca = cadastroRepository.findByEmail(email).get();
 		String BuscaCpf = novaBusca.getCpf();
 		novaBusca.setDataDeCadastro(LocalDateTime.now());
 		return " Email vinculado ao CPF " + BuscaCpf;
 	}
+	
+	
 
-	public String CriarLoteUsuario(List<UsuarioDTO> usuarios) {
-		List<UsuarioModel> lista = new ArrayList<>();
-		for (UsuarioDTO usuario : usuarios) {
-			lista.add(new UsuarioModel(usuario));
-		}
-		cadastroRepository.saveAll(lista);
-		return "Lote cadastrado com sucesso" ;
-	}
+	public ResponseEntity<String> CriarLoteUsuario(List<UsuarioDTO> usuarios) {
+		try {
+			List<UsuarioModel> lista = new ArrayList<>();
+			for (UsuarioDTO usuario : usuarios) {
+				lista.add(new UsuarioModel(usuario));
+			}
+			 cadastroRepository.saveAll(lista);
+			return ResponseEntity.status(HttpStatus.CREATED).body("Usuarios cadastrados com sucesso") ;
+			
+		}catch (DataIntegrityViolationException e) {
+			return  ResponseEntity.status(HttpStatus.CREATED).body("Nosso banco contem um email com usuario cadastrado") ;
+		}		
+	  }
 
+	
+	
 	public List<UsuarioDesativadoDto> buscarPorDesativados() {
 		List<UsuarioModel> lista = cadastroRepository.buscaDesativados();
 		List<UsuarioDesativadoDto> listaResponse = lista.stream()
@@ -95,4 +114,22 @@ public class UsuarioService {
 				.map(user -> modelMapper.map(user, UsuariosAtivosDTO.class)).collect(Collectors.toList());
 		return listaResponse;
 	}
+	
+
+	private Boolean verificaSeUsuarioExistePeloEmail(UsuarioDTO usuaDto) {
+		if(cadastroRepository.findByEmail(usuaDto.getEmail()).isPresent()) {
+			return true ;		
+		 }else {
+			 return false;
+			 }
+	     }
+	
+	  private Boolean verificaCPFexistente(UsuarioDTO usuarioDTO) {
+		  if(cadastroRepository.findByCPF(usuarioDTO.getCpf()).isPresent()) {
+			  return true ;
+		  }else {
+			  return false ;
+		  }
+	  }
+	
 }

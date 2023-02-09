@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -31,23 +32,22 @@ public class UsuarioModel {
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private int id ; 
 		
-	@Column(name = "usuario" ,unique = true , nullable = false)
-	@Email 
-	@NotBlank
+	@Column(name = "usuario" ,unique = true , nullable = false) 
+	@NotNull
+	@Email
 	private String email;
 	
-	@NotBlank
+	@NotNull
 	@Column(name = "senha", length = 10)
 	private String senha; 
 	
 	private LocalDateTime data_exclusao;
 	
-	@NotBlank
+	@NotNull
 	@Column(name = "data_cadastro")
 	private LocalDateTime dataDeCadastro = LocalDateTime.now();
 		
-	@NotBlank
-	@CPF
+	@NotNull
 	@Column(name = "cpf")
 	private String cpf ;
 	
