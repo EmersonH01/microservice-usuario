@@ -24,27 +24,45 @@ public class UsuarioService {
 
 	@Autowired
 	public CadastroUsuarioRepository cadastroRepository;
+	
+	private static final String  SUCESSO = "SUCESSO" ;
 
 	@Autowired
 	private ModelMapper modelMapper;
 	
 	public String criaUsuarioNovo(UsuarioDTO usuarioDto){	
+		String mensagemValidacao = validaCampos(usuarioDto);
+		if (!mensagemValidacao.equals(SUCESSO)) {
+			return mensagemValidacao;
+		}
+			
 		if(verificaCPFexistente(usuarioDto) || verificaSeUsuarioExistePeloEmail(usuarioDto)) {
 			return "Este usuario já esta cadastrado no banco de dados" ;
-		}else {
-			ModelMapper mapper = new ModelMapper();
-			UsuarioModel usuario = mapper.map(usuarioDto, UsuarioModel.class);
-			usuario.setDataDeCadastro(LocalDateTime.now());
-			cadastroRepository.save(usuario);
+		 } else {
+			CadastroDeUmNovoUsuario(usuarioDto);
 			return "usuario foi cadastrado com sucesso" ;
-		 } 					
+		  } 					
 		}
- 
-	
+
+	private String validaCampos(UsuarioDTO usuarioDto) {
+		if(verificaCampoEmailVazio(usuarioDto)) {
+			return "O campo de email esta vazio" ;
+		}else if (verificaCampoCPFVazio(usuarioDto)) {
+			return "Campo de CPF esta vazio" ;
+		}
+		return SUCESSO; 
+	}
+
+	private void CadastroDeUmNovoUsuario(UsuarioDTO usuarioDto) {
+		ModelMapper mapper = new ModelMapper();
+		UsuarioModel usuario = mapper.map(usuarioDto, UsuarioModel.class);
+		usuario.setDataDeCadastro(LocalDateTime.now());
+		cadastroRepository.save(usuario);
+	}
 	
 	public UsuarioDTO editaUsuario(UsuarioDTO usuarioDto, String email) {
 		UsuarioModel editar = cadastroRepository.findByEmail(email).get();
-		editarUsuario(usuarioDto, editar);
+		editarUsuario(usuarioDto, editar); 
 		cadastroRepository.save(editar);
 		ModelMapper mapper = new ModelMapper();
 		return mapper.map(editar, UsuarioDTO.class);
@@ -83,8 +101,6 @@ public class UsuarioService {
 		return " Email vinculado ao CPF " + BuscaCpf;
 	}
 	
-	
-
 	public ResponseEntity<String> CriarLoteUsuario(List<UsuarioDTO> usuarios) {
 		try {
 			List<UsuarioModel> lista = new ArrayList<>();
@@ -92,14 +108,11 @@ public class UsuarioService {
 				lista.add(new UsuarioModel(usuario));
 			}
 			 cadastroRepository.saveAll(lista);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Usuarios cadastrados com sucesso") ;
-			
+			return ResponseEntity.status(HttpStatus.CREATED).body("Usuarios cadastrados com sucesso") ;		
 		}catch (DataIntegrityViolationException e) {
 			return  ResponseEntity.status(HttpStatus.CREATED).body("Nosso banco contem um email com usuario cadastrado") ;
 		}		
 	  }
-
-	
 	
 	public List<UsuarioDesativadoDto> buscarPorDesativados() {
 		List<UsuarioModel> lista = cadastroRepository.buscaDesativados();
@@ -115,12 +128,11 @@ public class UsuarioService {
 		return listaResponse;
 	}
 	
-
 	private Boolean verificaSeUsuarioExistePeloEmail(UsuarioDTO usuaDto) {
 		if(cadastroRepository.findByEmail(usuaDto.getEmail()).isPresent()) {
 			return true ;		
 		 }else {
-			 return false;
+			  return false;
 			 }
 	     }
 	
@@ -130,6 +142,31 @@ public class UsuarioService {
 		  }else {
 			  return false ;
 		  }
-	  }
-	
+	   }
+	  
+	  public boolean verificaCampoEmailVazio(UsuarioDTO usuarioDTO) {
+		  if(usuarioDTO.getEmail().isEmpty() || usuarioDTO.getEmail() == null) {
+			  return true ;
+		  }else {
+			  return false ;
+		  }
+	  }	
+	  
+	  public boolean verificaCampoCPFVazio(UsuarioDTO usuarioDTO) {
+		  if(usuarioDTO.getCpf().isEmpty() || usuarioDTO.getCpf() == null) {
+			  return true ;
+		  }else {
+			  return false ;
+		  }
+	  }	
+	  
+	  public boolean verificaCampoSenhaVazio(UsuarioDTO usuarioDTO) {
+		  if(usuarioDTO.getSenha().isEmpty() || usuarioDTO.getSenha() == null) {
+			  return true ;
+		  }else {
+			  return false ;
+		  }
+	  }	
+	  
+	  
 }

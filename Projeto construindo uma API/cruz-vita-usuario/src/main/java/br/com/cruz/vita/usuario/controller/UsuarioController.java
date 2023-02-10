@@ -3,7 +3,6 @@ package br.com.cruz.vita.usuario.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,16 +41,12 @@ public class UsuarioController {
 	public ResponseEntity<String> criandoNovoUsuario (@RequestBody UsuarioDTO usuario){		
 		return ResponseEntity.status(200).body(service.criaUsuarioNovo(usuario));
 	}
-		
-	
-	
+			
 	@PostMapping("/criar/lote")
 	public  ResponseEntity<String> listaDeUsuario (@RequestBody List<UsuarioDTO> usuario){
 		return ResponseEntity.status(200).body(service.CriarLoteUsuario(usuario).getBody());
 	}
-	
-	
-	
+		
 	@PutMapping("/editar/{email}")
 	public ResponseEntity<String> editaUsuario (@RequestBody UsuarioDTO usuario, @PathVariable String email ) {
 		UsuarioDTO model = service.editaUsuario(usuario, email);
@@ -77,8 +72,7 @@ public class UsuarioController {
 	public ResponseEntity<String> buscarUsuario (@PathVariable String email){
 		return ResponseEntity.status(200).body(service.buscaPorEmail(email));
 	}
-	
-		 
+			 
 	@DeleteMapping ("/deletar/{email}")
 	public ResponseEntity<String> excluirPorEmail (@PathVariable String email){
 		return ResponseEntity.status(200).body(service.ExcluirPorEmail(email));
