@@ -10,8 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -33,21 +31,18 @@ public class UsuarioModel {
 	private int id ; 
 		
 	@Column(name = "usuario" ,unique = true , nullable = false) 
-	@NotNull
 	@Email
 	private String email;
 	
-	@NotNull
+	
 	@Column(name = "senha", length = 10)
 	private String senha; 
 	
 	private LocalDateTime data_exclusao;
 	
-	@NotNull
 	@Column(name = "data_cadastro")
 	private LocalDateTime dataDeCadastro = LocalDateTime.now();
 		
-	@NotNull
 	@Column(name = "cpf")
 	private String cpf ;
 	

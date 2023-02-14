@@ -26,6 +26,7 @@ import br.com.cruz.vita.usuario.service.UsuarioService;
  * @version : 1.0
  * @date : 03/02/2023 ás 17:28
  * 
+ * 
  */
 @RestController 
 @RequestMapping("/usuario")
@@ -49,8 +50,8 @@ public class UsuarioController {
 		
 	@PutMapping("/editar/{email}")
 	public ResponseEntity<String> editaUsuario (@RequestBody UsuarioDTO usuario, @PathVariable String email ) {
-		UsuarioDTO model = service.editaUsuario(usuario, email);
-		return ResponseEntity.status(200).body("Usuario vinculado ao cpf " +  model.getCpf() +  " foi atualizado com sucesso  "  + model.toString());
+		String mensagem = service.editarUsuario(usuario, email);
+		return ResponseEntity.status(200).body(mensagem);
 	}
 	
 	@GetMapping("/listar/desativados")

@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 
 import com.google.common.base.Optional;
 
-import br.com.cruz.vita.usuario.dto.UsuarioDTO;
 import br.com.cruz.vita.usuario.model.UsuarioModel;
 
 public interface CadastroUsuarioRepository extends JpaRepository<UsuarioModel, Long>{
