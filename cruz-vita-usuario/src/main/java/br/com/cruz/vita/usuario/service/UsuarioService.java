@@ -1,14 +1,20 @@
 package br.com.cruz.vita.usuario.service;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.swing.text.MaskFormatter;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import br.com.caelum.stella.validation.CPFValidator;
 import br.com.cruz.vita.usuario.dto.ResponseUsuarioDTO;
@@ -31,12 +37,15 @@ public class UsuarioService {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	@Autowired
+	private RestTemplate restTemplate;
+
 	/* listar todos os usuarios através do metodo findAll da JpaRepository */
 	public List<ResponseUsuarioDTO> listarUsuario() {
 		List<UsuarioModel> lista = usuarioRepository.findAll();
-		List<ResponseUsuarioDTO> dto = lista.stream().map(user -> modelMapper.map(user, ResponseUsuarioDTO.class))
-				.collect(Collectors.toList());
-		return dto;
+		List<ResponseUsuarioDTO> listaResposta = lista.stream()
+				.map(user -> modelMapper.map(user, ResponseUsuarioDTO.class)).collect(Collectors.toList());
+		return listaResposta;
 	}
 
 	/* Busca todos usuarios por email que é passado na Url */
@@ -50,10 +59,10 @@ public class UsuarioService {
 //		LocalDateTime usuarioExcluido = usuarioModel.getDataExclusao();
 
 		List<UsuarioModel> lista = usuarioRepository.findByDataExclusao();
-		List<ResponseUsuarioDTO> dto = lista.stream().map(user -> modelMapper.map(user, ResponseUsuarioDTO.class))
-				.collect(Collectors.toList());
+		List<ResponseUsuarioDTO> listaResposta = lista.stream()
+				.map(user -> modelMapper.map(user, ResponseUsuarioDTO.class)).collect(Collectors.toList());
 
-		return dto;
+		return listaResposta;
 	}
 
 	/* busca usuarios desativados pela data de ativos */
@@ -61,78 +70,108 @@ public class UsuarioService {
 //		LocalDateTime usuarioExcluido = usuarioModel.getDataExclusao();
 
 		List<UsuarioModel> lista = usuarioRepository.findByDataInclusao();
-		List<ResponseUsuarioDTO> dto = lista.stream().map(user -> modelMapper.map(user, ResponseUsuarioDTO.class))
-				.collect(Collectors.toList());
+		List<ResponseUsuarioDTO> listaResposta = lista.stream()
+				.map(user -> modelMapper.map(user, ResponseUsuarioDTO.class)).collect(Collectors.toList());
 
-		return dto;
+		return listaResposta;
 	}
 
 	/* cadastra um novo usuario */
 	public String cadastrarUsuario(UsuarioDTO usuario) {
 
-		validarCPF(usuario.getCpf());
-		verificarEmailJaExiste(usuario);
-		UsuarioModel usuarioNovo = modelMapper.map(usuario, UsuarioModel.class);
-		usuarioNovo.setDataInclusao(LocalDateTime.now());
-		usuarioRepository.save(usuarioNovo);
-		return "usuário criado com sucesso!";
+		if (verificarEmailJaExiste(usuario) && verificarSeCPFExiste(usuario) && validarCPF(usuario)) {
+			UsuarioModel usuarioNovo = modelMapper.map(usuario, UsuarioModel.class);
+			usuarioNovo.setDataInclusao(LocalDateTime.now());
+			usuarioNovo.setCpf(formatarCpf(usuario.getCpf()));
+			usuarioRepository.save(usuarioNovo);
+			return "usuário criado com sucesso!";
+		} else {
+
+			return "usuario " + usuario.getCpf() + " já existente em nosso sistema!";
+		}
 
 	}
 
 	/* cadastra uma lista de usuarios */
-	public String cadastrarPorLote(List<UsuarioDTO> usuario) {
+	public ResponseEntity<String> cadastrarPorLote(List<UsuarioDTO> usuario) {
+		try {
+			for (UsuarioDTO itemLista : usuario) {
+				if (verificarEmailJaExiste(itemLista) && verificarSeCPFExiste(itemLista) && validarCPF(itemLista)) {
+					UsuarioModel usuarioModel = modelMapper.map(itemLista, UsuarioModel.class);
+					usuarioModel.setCpf(formatarCpf(itemLista.getCpf()));
+					usuarioRepository.save(usuarioModel);
+				} else {
+					return ResponseEntity.status(HttpStatus.CREATED)
+							.body("usuario " + itemLista.getCpf() + " já existente em nosso sistema!");
 
-		for (UsuarioDTO itemLista : usuario) {
+				}
 
-			if (verificarSeExiste(itemLista)) {
-
-				throw new DataIntegrityViolationException(
-						"O CPF: " + itemLista.getCpf() + " já existe em nosso sistema");
 			}
-			UsuarioModel usuarioModel = modelMapper.map(itemLista, UsuarioModel.class);
-			usuarioModel.setDataInclusao(LocalDateTime.now());
-			usuarioRepository.save(usuarioModel);
+			return ResponseEntity.status(HttpStatus.CREATED).body("Lote cadastrado com sucesso");
 
+		} catch (DataIntegrityViolationException ex) {
+
+			return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro já existente");
 		}
-		return "Lote cadastrado com sucesso";
 
 	}
 
 	/* verifica se o CPF já é existente no banco de dados */
-	public Boolean verificarSeExiste(UsuarioDTO usuarioDTO) {
+	public boolean verificarSeCPFExiste(UsuarioDTO usuarioDTO) {
 
-		if (usuarioRepository.findByCpf(usuarioDTO.getCpf()).isEmpty()) {
+		if (usuarioRepository.findByCpf(usuarioDTO.getCpf()).isPresent()) {
 			return false;
+		} else {
+
+			return true;
 		}
 
-		return true;
+	}
+
+	/* formatar cpf */
+	public String formatarCpf(String cpf) {
+		if (cpf == null || cpf.length() != 11) {
+			return "CPF inválido";
+		}
+
+		try {
+			MaskFormatter mask = new MaskFormatter("###.###.###-##");
+			mask.setValueContainsLiteralCharacters(false);
+			return mask.valueToString(cpf);
+
+		} catch (ParseException ep) {
+			ep.printStackTrace();
+			return "Erro ao formatar CPF";
+		}
 	}
 
 	/* valida se o cpf é verdadeiro ou falso */
-	public static boolean validarCPF(String cpf) {
+	public boolean validarCPF(UsuarioDTO usuarioDTO) {
 		CPFValidator cpfValidator = new CPFValidator();
 		try {
-			cpfValidator.assertValid(cpf);
+			cpfValidator.assertValid(usuarioDTO.getCpf());
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
+
 	}
 
 	/* verifica se o email existe em nosso banco de dados */
-	public String verificarEmailJaExiste(UsuarioDTO usuarioDTO) {
-		Optional<UsuarioModel> usuarioModel = usuarioRepository.findByEmail(usuarioDTO.getEmail());
-		if (usuarioModel.isPresent()) {
-			return "O email: " + usuarioModel.get().getEmail() + " já existe em nosso sistema";
+	public Boolean verificarEmailJaExiste(UsuarioDTO usuarioDTO) {
+		if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
+			return false;
+		} else {
+			return true;
 		}
-		return "";
 	}
 
 	/* atualiza o usuario através do email passado e retorna uma mensagem */
 	public String atualizarViaEmail(UsuarioDTO usuario, String email) {
 		UsuarioModel buscaEmail = usuarioRepository.findByEmail(email).get();
 		UsuarioModel usuarioModel = modelMapper.map(usuario, UsuarioModel.class);
+
 		usuarioModel.setId(buscaEmail.getId());
 		String cpfUsuario = usuarioModel.getCpf();
 		usuarioRepository.save(usuarioModel);

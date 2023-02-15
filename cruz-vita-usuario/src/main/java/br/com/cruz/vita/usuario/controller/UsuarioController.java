@@ -36,6 +36,7 @@ public class UsuarioController {
 	@GetMapping("/listar")
 	public ResponseEntity<List<ResponseUsuarioDTO>> listarUsuarios() {
 
+		usuarioService.getRestTemplate();
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.listarUsuario());
 	}
 
@@ -50,9 +51,9 @@ public class UsuarioController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarAtivados());
 	}
-	
+
 	@GetMapping("/buscar/{email}")
-	public ResponseEntity<String> buscarPorEmail(@PathVariable String email) {
+	public ResponseEntity<String> buscarPorEmail(@Valid @PathVariable String email) {
 
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarPorEmail(email));
 	}
@@ -66,7 +67,7 @@ public class UsuarioController {
 	@PostMapping("/criarlote")
 	public ResponseEntity<String> criarUsuarioLote(@Valid @RequestBody List<UsuarioDTO> usuario) {
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.cadastrarPorLote(usuario));
+		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.cadastrarPorLote(usuario).getBody());
 	}
 
 	@PutMapping("/atualizar/{email}")
@@ -76,7 +77,7 @@ public class UsuarioController {
 	}
 
 	@DeleteMapping("/excluir/{email}")
-	public ResponseEntity<String> excluirEmail(@RequestBody @PathVariable String email) {
+	public ResponseEntity<String> excluirEmail(@PathVariable String email) {
 
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(usuarioService.excluirPorEmail(email));
 	}
@@ -86,4 +87,5 @@ public class UsuarioController {
 
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(usuarioService.deletarPorEmail(email));
 	}
+
 }
