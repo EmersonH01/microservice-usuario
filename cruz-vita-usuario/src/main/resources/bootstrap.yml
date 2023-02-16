@@ -1,8 +1,9 @@
 spring:
   application:
-    name: 'usuario'
+    name: 'cruz-vita-usuario'
   profiles:
-    active: default
+    active: prod
   cloud:
     config:
       uri: http://localhost:8888
+      name: usuario
