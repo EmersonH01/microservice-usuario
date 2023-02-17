@@ -27,5 +27,7 @@ public class UsuarioDTO {
 	public void setDataDeCadastro(LocalDateTime now) {
 		
   }
+
+	
 	
 }

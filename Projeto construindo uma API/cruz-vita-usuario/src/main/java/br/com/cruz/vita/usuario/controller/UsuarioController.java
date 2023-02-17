@@ -3,6 +3,7 @@ package br.com.cruz.vita.usuario.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.cruz.vita.usuario.dto.UsuarioDTO;
 import br.com.cruz.vita.usuario.dto.UsuarioDesativadoDto;
 import br.com.cruz.vita.usuario.dto.UsuariosAtivosDTO;
-import br.com.cruz.vita.usuario.repository.CadastroUsuarioRepository;
 import br.com.cruz.vita.usuario.service.UsuarioService;
+//import lombok.extern.slf4j.Slf4j;
 
 /*
  * 
@@ -30,14 +31,19 @@ import br.com.cruz.vita.usuario.service.UsuarioService;
  */
 @RestController 
 @RequestMapping("/usuario")
+//@Slf4j
 public class UsuarioController {
 	
 	@Autowired
 	private UsuarioService service ;
 	
-	@Autowired
-	private CadastroUsuarioRepository cadastroUsuarioRepository;
-			
+//	@Value("${ambiente.deploy}")
+//	private String profile;
+//	
+//	public void log() {
+//		log.info("Ambiente :"  + profile);
+//	}
+		
 	@PostMapping(path = "/cadastro")
 	public ResponseEntity<String> criandoNovoUsuario (@RequestBody UsuarioDTO usuario){		
 		return ResponseEntity.status(200).body(service.criaUsuarioNovo(usuario));
@@ -55,17 +61,17 @@ public class UsuarioController {
 	}
 	
 	@GetMapping("/listar/desativados")
-	public ResponseEntity<List<UsuarioDesativadoDto>> listaDeDesativados (){
+	public ResponseEntity<List<UsuarioDesativadoDto>> listaDeDesativados(){
 		return ResponseEntity.status(200).body(service.buscarPorDesativados());
 	}
 	
 	@GetMapping("/listar/ativados")
-	public ResponseEntity<List<UsuariosAtivosDTO>> listaDeAtivados (){
+	public ResponseEntity<List<UsuariosAtivosDTO>> listaDeAtivados(){
 		return ResponseEntity.status(200).body(service.buscarPorAtivados());
 	}
 	
 	@GetMapping(path = "lista")
-	public  ResponseEntity<List<UsuarioDTO>> listaBanco (){
+	public  ResponseEntity<List<UsuarioDTO>> listaBanco(){
 		return ResponseEntity.status(200).body(service.ListaUsuario());
 	}
 	

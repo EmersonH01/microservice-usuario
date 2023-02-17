@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,10 @@ import br.com.cruz.vita.usuario.dto.UsuarioDesativadoDto;
 import br.com.cruz.vita.usuario.dto.UsuariosAtivosDTO;
 import br.com.cruz.vita.usuario.model.UsuarioModel;
 import br.com.cruz.vita.usuario.repository.CadastroUsuarioRepository;
+import lombok.Data;
 
 @Service
+@Data
 public class UsuarioService {
 
 	@Autowired

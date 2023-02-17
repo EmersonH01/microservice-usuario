@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    password: ' '
+    password: ' ' 
     testWhileIdle: true
     url: jdbc:mariadb://localhost:3306/vita_academy
     username: root
@@ -17,5 +17,5 @@ spring:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
 
- 
+         
       

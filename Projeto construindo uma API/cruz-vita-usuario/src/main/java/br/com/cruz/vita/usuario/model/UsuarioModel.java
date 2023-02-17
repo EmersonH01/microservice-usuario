@@ -11,18 +11,14 @@ import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
-import org.hibernate.validator.constraints.br.CPF;
-
 import br.com.cruz.vita.usuario.dto.UsuarioDTO;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Valid
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Data
 @Table (name = "usuarios")
 public class UsuarioModel {
 	
@@ -46,9 +42,109 @@ public class UsuarioModel {
 	@Column(name = "cpf")
 	private String cpf ;
 	
+	
+	
+	
+	
     public UsuarioModel(UsuarioDTO usuario){
     	this.cpf = usuario.getCpf();
     	this.email = usuario.getEmail();
     	this.senha = usuario.getSenha();
      }
+
+
+
+
+
+	public int getId() {
+		return id;
+	}
+
+
+
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+
+
+
+	public String getEmail() {
+		return email;
+	}
+
+
+
+
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+
+
+
+
+	public String getSenha() {
+		return senha;
+	}
+
+
+
+
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+
+
+
+
+	public LocalDateTime getData_exclusao() {
+		return data_exclusao;
+	}
+
+
+
+
+
+	public void setData_exclusao(LocalDateTime data_exclusao) {
+		this.data_exclusao = data_exclusao;
+	}
+
+
+
+
+
+	public LocalDateTime getDataDeCadastro() {
+		return dataDeCadastro;
+	}
+
+
+
+
+
+	public void setDataDeCadastro(LocalDateTime dataDeCadastro) {
+		this.dataDeCadastro = dataDeCadastro;
+	}
+
+
+
+
+
+	public String getCpf() {
+		return cpf;
+	}
+
+
+
+
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
 }
