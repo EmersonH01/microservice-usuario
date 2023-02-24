@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,6 +38,7 @@ public class UsuarioModel {
 
 	@Column(name = "senha", length = 10)
 	private String senha;
+	
 
 	private LocalDateTime data_exclusao;
 
@@ -45,10 +48,12 @@ public class UsuarioModel {
 	@CPF
 	private String cpf;
 
-	private boolean bloqueado;
 
 	@Column
 	private int NumTentativasFalhas;
+	
+	
+	@Enumerated(EnumType.STRING)
 	private StatusUsuarioEnum status;
 
 	public UsuarioModel(UsuarioDTO usuario) {

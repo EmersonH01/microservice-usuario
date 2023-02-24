@@ -24,35 +24,32 @@ public class AutenticacaoService {
 			UsuarioModel usuarioBanco = cadastroRepository.findByEmail(usuario.getEmail()).get();
 			UsuarioModel usuarioModel = usuario;
 			usuarioModel.setId(usuarioBanco.getId());
-			//usuarioModel.setStatus(usuarioBanco.getStatus());
-
+			usuarioModel.setStatus(usuarioBanco.getStatus());
 			
 			if (usuarioModel.getSenha().equals(usuarioBanco.getSenha())) {
 				usuarioModel.setNumTentativasFalhas(0);
 				usuarioModel.setId(usuarioBanco.getId());
 				usuarioModel.setStatus(usuarioBanco.getStatus());
 				usuarioModel.setSenha(usuarioBanco.getSenha());
-				usuarioModel.setStatus(usuarioBanco.getStatus());
 
 				cadastroRepository.save(usuarioModel);
-				return "Usuário autenticado com sucesso!" ;
+				return "Usuário autenticado com sucesso!";
 				
 			} else {
 				usuarioBanco = cadastroRepository.findByEmail(usuario.getEmail()).get();
 				int tentativasFalhas = usuarioBanco.getNumTentativasFalhas();
 				usuarioModel.setNumTentativasFalhas(tentativasFalhas + 1);
-				cadastroRepository.save(usuarioModel);
-				if (tentativasFalhas + 1 >= 5) {
-					usuarioModel.setStatus(StatusUsuarioEnum.bloqueado);
-					usuarioModel.setStatus(usuarioBanco.getStatus());
+				usuarioModel.setStatus(usuarioBanco.getStatus());
 
+				cadastroRepository.save(usuarioModel);
+				if (tentativasFalhas >= 5) {
+					usuarioModel.setStatus(StatusUsuarioEnum.bloqueado);
 					cadastroRepository.save(usuarioModel);
 					return "Usuário bloqueado por muitas tentativas de login!";
 				}
-				return "Senha incorreta! Tentativa " + (tentativasFalhas + 1) + " de 5.";
+				return "Senha incorreta! Tentativa " + (tentativasFalhas) + " de 5.";
 			}
-		}
-		
-		return "email não existe ";
+		}		 
+		return "Email não existe na nossa base de dados";
 	}
 }
