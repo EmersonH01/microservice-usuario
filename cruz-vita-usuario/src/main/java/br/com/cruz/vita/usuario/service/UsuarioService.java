@@ -8,21 +8,17 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import br.com.cruz.vita.usuario.dto.UsuarioDTO;
 import br.com.cruz.vita.usuario.dto.UsuarioDesativadoDto;
 import br.com.cruz.vita.usuario.dto.UsuariosAtivosDTO;
 import br.com.cruz.vita.usuario.model.UsuarioModel;
 import br.com.cruz.vita.usuario.repository.CadastroUsuarioRepository;
-import lombok.Data;
 
 @Service
-@Data
 public class UsuarioService {
 
 	@Autowired
@@ -32,7 +28,7 @@ public class UsuarioService {
 
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	public String criaUsuarioNovo(UsuarioDTO usuarioDto) {
 		String mensagemValidacao = validaCampos(usuarioDto);
 		if (!mensagemValidacao.equals(SUCESSO)) {
@@ -40,12 +36,12 @@ public class UsuarioService {
 		}
 		if (verificaCPFexistente(usuarioDto) || verificaSeUsuarioExistePeloEmail(usuarioDto.getEmail())) {
 			return "Este usuario já esta cadastrado no banco de dados";
-		}else {
+		} else {
 			CadastroDeUmNovoUsuario(usuarioDto);
 			return "usuario foi cadastrado com sucesso";
 		}
 	}
-	
+
 	private String validaCampos(UsuarioDTO usuarioDto) {
 		if (verificaCampoEmailVazio(usuarioDto)) {
 			return "O campo de email esta vazio";
@@ -72,16 +68,15 @@ public class UsuarioService {
 			} else {
 				cadastroRepository.save(editar);
 			}
-			return "Informações atualizadas com sucesso, Email: " + usuarioDto.getEmail() + ", CPF: " + usuarioDto.getCpf() + ", Senha: "
-					+ usuarioDto.getSenha();
+			return "Informações atualizadas com sucesso, Email: " + usuarioDto.getEmail() + ", CPF: "
+					+ usuarioDto.getCpf() + ", Senha: " + usuarioDto.getSenha();
 		} catch (Exception e) {
 			return "Email não encontrado";
-			
+
 		}
 
 	}
-	
-	
+
 	public List<UsuarioDTO> ListaUsuario() {
 		List<UsuarioModel> lista = cadastroRepository.findAll();
 		List<UsuarioDTO> listaResponse = lista.stream().map(user -> modelMapper.map(user, UsuarioDTO.class))
@@ -102,7 +97,7 @@ public class UsuarioService {
 		novaBusca.setDataDeCadastro(LocalDateTime.now());
 		return " Email vinculado ao CPF " + BuscaCpf;
 	}
-	
+
 	public ResponseEntity<String> CriarLoteUsuario(List<UsuarioDTO> usuarios) {
 		try {
 			List<UsuarioModel> lista = new ArrayList<>();
@@ -115,7 +110,7 @@ public class UsuarioService {
 			return ResponseEntity.status(HttpStatus.CREATED).body("Este usuario ja existe");
 		}
 	}
-	
+
 	public List<UsuarioDesativadoDto> buscarPorDesativados() {
 		List<UsuarioModel> lista = cadastroRepository.buscaDesativados();
 		List<UsuarioDesativadoDto> listaResponse = lista.stream()
@@ -156,14 +151,6 @@ public class UsuarioService {
 
 	public boolean verificaCampoCPFVazio(UsuarioDTO usuarioDTO) {
 		if (usuarioDTO.getCpf().isEmpty() || usuarioDTO.getCpf() == null) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public boolean verificaCampoSenhaVazio(UsuarioDTO usuarioDTO) {
-		if (usuarioDTO.getSenha().isEmpty() || usuarioDTO.getSenha() == null) {
 			return true;
 		} else {
 			return false;

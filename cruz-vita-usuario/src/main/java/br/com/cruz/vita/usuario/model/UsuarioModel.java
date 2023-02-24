@@ -15,99 +15,50 @@ import org.hibernate.validator.constraints.br.CPF;
 
 import br.com.cruz.vita.usuario.dto.UsuarioDTO;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Valid
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table (name = "usuarios")
+@Table(name = "usuarios")
+@Data
 public class UsuarioModel {
-	
+
 	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
-	private int id ; 
-		
-	@Column(name = "usuario" ,unique = true , nullable = false) 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+
+	@Column(name = "usuario", unique = true, nullable = false)
 	@Email
 	private String email;
-		
+
 	@Column(name = "senha", length = 10)
-	private String senha; 
-	
+	private String senha;
+
 	private LocalDateTime data_exclusao;
-	
+
 	@Column(name = "data_cadastro")
 	private LocalDateTime dataDeCadastro = LocalDateTime.now();
-		
 	@Column(name = "cpf")
 	@CPF
-	private String cpf ;
-	
-    public String getEmail() {
-		return email;
+	private String cpf;
+
+	private boolean bloqueado;
+
+	@Column
+	private int NumTentativasFalhas;
+	private StatusUsuarioEnum status;
+
+	public UsuarioModel(UsuarioDTO usuario) {
+		this.email = usuario.getEmail();
+		this.senha = usuario.getSenha();
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public static boolean isPresent() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
-
-
-	public String getSenha() {
-		return senha;
-	}
-
-
-
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
-
-
-
-	public LocalDateTime getData_exclusao() {
-		return data_exclusao;
-	}
-
-
-
-	public void setData_exclusao(LocalDateTime data_exclusao) {
-		this.data_exclusao = data_exclusao;
-	}
-
-
-
-	public LocalDateTime getDataDeCadastro() {
-		return dataDeCadastro;
-	}
-
-
-
-	public void setDataDeCadastro(LocalDateTime dataDeCadastro) {
-		this.dataDeCadastro = dataDeCadastro;
-	}
-
-
-
-	public String getCpf() {
-		return cpf;
-	}
-
-
-
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-
-
-
-	public UsuarioModel(UsuarioDTO usuario){
-    	this.cpf = usuario.getCpf();
-    	this.email = usuario.getEmail();
-    	this.senha = usuario.getSenha();
-     }
-    
-    
-    
 }
