@@ -83,12 +83,6 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.atualizarViaEmail(usuario, email));
 	}
 
-	@DeleteMapping("/excluir/{email}")
-	public ResponseEntity<String> excluirEmail(@PathVariable @Valid String email) {
-		infoAmbiente();
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(usuarioService.excluirPorEmail(email));
-	}
-
 	@DeleteMapping("/deletar/{email}")
 	public ResponseEntity<String> deletarEmail(@PathVariable @Valid String email) {
 		infoAmbiente();
@@ -97,6 +91,12 @@ public class UsuarioController {
 
 	public void infoAmbiente() {
 		log.info("O ambiente é: " + profile);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> excluirUsuario(@PathVariable Long id) {
+		usuarioService.excluirUsuario(id);
+		return ResponseEntity.status(204).build();
 	}
 
 }
